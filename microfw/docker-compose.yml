@@ -1,0 +1,35 @@
+version: "2"
+
+services:
+
+    app:
+        image: busybox
+        volumes:
+            - ./../:/data
+        command: "true"
+
+
+    php:
+        image: redjik/php:5.6
+        volumes:
+            - /run/php
+        volumes_from:
+            - app
+        environment:
+            DB: mysql
+            NGINX: apploc
+        restart: always
+
+
+    apploc:
+        image: redjik/nginx
+        ports:
+            - 80:80
+            - 443:443
+        volumes_from:
+            - app
+            - php
+        volumes:
+            - ./configs/nginx/conf.d/local.conf:/etc/nginx/sites-enabled/default
+        restart: always
+
